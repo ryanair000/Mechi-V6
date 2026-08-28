@@ -44,7 +44,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
   const supabase = await createClient();
   const { data: profile } = await supabase
     .from('mechi_profiles')
-    .select('id, handle, display_name, bio, avatar_url, banner_url, country_code, city, gaming_styles, show_accounts, profile_completed_at, created_at')
+    .select('id, handle, display_name, bio, avatar_url, banner_url, country_code, city, gaming_styles, show_city, show_accounts, profile_completed_at, created_at')
     .eq('handle', handle)
     .maybeSingle();
 
@@ -93,7 +93,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
     .filter((row) => row.platform)
     .sort((a, b) => Number(b.is_primary) - Number(a.is_primary));
 
-  const location = [profile.show_city !== false ? profile.city : null, profile.country_code]
+  const location = [profile.show_city ? profile.city : null, profile.country_code]
     .filter(Boolean)
     .join(', ');
   const initials = profile.display_name
