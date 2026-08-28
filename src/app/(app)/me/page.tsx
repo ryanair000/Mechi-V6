@@ -1,20 +1,56 @@
-import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { SignOutButton } from '@/features/auth/components/sign-out-button';
+import { hasSupabaseEnv } from '@/lib/env';
+import { createClient } from '@/lib/supabase/server';
 
-export default function MePage() {
+export default async function MePage() {
+  if (!hasSupabaseEnv()) {
+    return (
+      <section className="max-w-3xl">
+        <p className="text-sm font-bold text-[var(--accent)]">MECHI ID</p>
+        <h1 className="mt-3 text-4xl font-black tracking-[-.045em]">Backend not configured.</h1>
+      </section>
+    );
+  }
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) redirect('/login');
+
+  const { data: profile } = await supabase
+    .from('mechi_profiles')
+    .select('handle, display_name, bio, city, country_code, onboarding_step, created_at')
+    .eq('id', user.id)
+    .maybeSingle();
+
+  if (!profile) redirect('/onboarding');
+
   return (
     <section className="max-w-3xl">
-      <p className="text-sm font-bold text-[var(--accent)]">MECHI ID</p>
-      <h1 className="mt-3 text-5xl font-black tracking-[-.05em]">Claim the identity first.</h1>
-      <p className="mt-4 max-w-xl text-lg leading-8 text-white/55">Sprint 1 turns this into the authentication + handle-claiming flow. The route exists now so the product architecture remains stable as features arrive.</p>
-      <div className="mt-8 rounded-3xl border border-white/8 bg-[#0e1218] p-6">
-        <label className="text-xs font-black uppercase tracking-[.18em] text-white/45" htmlFor="handle">Your Mechi ID</label>
-        <div className="mt-3 flex rounded-2xl border border-white/10 bg-black/20 p-1.5">
-          <span className="px-3 py-3 text-sm text-white/35">mechi.gg/@</span>
-          <input id="handle" disabled placeholder="yourhandle" className="min-w-0 flex-1 bg-transparent px-1 text-sm outline-none placeholder:text-white/20" />
-          <button disabled className="rounded-xl bg-white/10 px-4 text-sm font-black text-white/35">Coming Sprint 1</button>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-sm font-bold text-[var(--accent)]">MECHI ID</p>
+          <h1 className="mt-2 text-5xl font-black tracking-[-.055em]">{profile.display_name}</h1>
+          <p className="mt-2 text-lg font-bold text-white/50">@{profile.handle}</p>
         </div>
+        <SignOutButton />
       </div>
-      <Link href="/" className="mt-6 inline-block text-sm font-bold text-white/50 hover:text-white">← Back to V6 foundation</Link>
+
+      <div className="mt-10 grid gap-4 sm:grid-cols-2">
+        <article className="rounded-3xl border border-white/8 bg-[#0e1218] p-6">
+          <p className="text-xs font-black uppercase tracking-[.16em] text-white/35">Your profile</p>
+          <p className="mt-4 text-lg font-black">mechi.gg/@{profile.handle}</p>
+          <p className="mt-2 text-sm leading-6 text-white/45">Your Mechi ID is live. Profile editing, games and platforms are the next onboarding steps.</p>
+        </article>
+        <article className="rounded-3xl border border-white/8 bg-[#0e1218] p-6">
+          <p className="text-xs font-black uppercase tracking-[.16em] text-white/35">Onboarding</p>
+          <p className="mt-4 text-3xl font-black">Step {profile.onboarding_step} / 7</p>
+          <p className="mt-2 text-sm leading-6 text-white/45">Identity claimed. Next: avatar, location, games, platforms and gamer style.</p>
+        </article>
+      </div>
     </section>
   );
 }
