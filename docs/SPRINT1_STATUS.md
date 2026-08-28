@@ -17,6 +17,7 @@
 - Added authenticated onboarding and atomic `@handle` claiming.
 - Connected `/me` and `/home` to the authenticated Mechi profile.
 - Added sign out.
+- Created a dedicated Vercel project named `mechi-v6` linked to `ryanair000/Mechi-V6`; V5 deployments remain untouched.
 
 ## Database verification
 
@@ -41,8 +42,8 @@ Long term, a dedicated Mechi Supabase project remains the preferred architecture
 
 ## Still pending before calling Sprint 1 production-ready
 
-1. Create a new Vercel project for `ryanair000/Mechi-V6` rather than repurposing V5.
-2. Configure:
+1. Confirm Vercel has a successful first production deployment for the linked `mechi-v6` project.
+2. Confirm these Vercel environment variables are configured for the required environments:
    - `NEXT_PUBLIC_SUPABASE_URL`
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
 3. Add the deployed Mechi callback URL to the shared Supabase Auth redirect allow list without changing other apps' URLs.
