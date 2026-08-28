@@ -33,6 +33,12 @@
 
 Supabase security advisors showed no Mechi warning-level RLS issue. The reserved-handle table reports an informational "RLS enabled with no policy" note by design because client privileges are revoked.
 
+### Shared-project inherited risk
+
+Because V6 currently reuses Jenga, it inherits project-level security configuration and historical database helpers that are outside Mechi's schema. The latest advisor run still reports existing Jenga warnings including public/signed-in executability of older `SECURITY DEFINER` functions, a mutable search path on an unrelated DesignHaven function, the existing `citext` extension location, and leaked-password protection being disabled. These were not introduced by Mechi and were deliberately not changed during this work because doing so could alter other live apps.
+
+Long term, a dedicated Mechi Supabase project remains the preferred architecture once a project slot is available. The normal Mechi migration chain is kept portable for that move.
+
 ## Still pending before calling Sprint 1 production-ready
 
 1. Create a new Vercel project for `ryanair000/Mechi-V6` rather than repurposing V5.
