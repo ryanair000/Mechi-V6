@@ -9,7 +9,8 @@ export default function LandingPage() {
         <MechiMark />
         <div className="flex items-center gap-2">
           <Link href="/discover" className="rounded-full px-4 py-2 text-sm font-semibold text-white/70 hover:text-white">Explore gamers</Link>
-          <Link href="/me" className="rounded-full bg-white px-4 py-2 text-sm font-black text-black">Claim your ID</Link>
+          <Link href="/login" className="rounded-full px-4 py-2 text-sm font-semibold text-white/70 hover:text-white">Log in</Link>
+          <Link href="/signup" className="rounded-full bg-white px-4 py-2 text-sm font-black text-black">Claim your ID</Link>
         </div>
       </nav>
 
@@ -19,7 +20,7 @@ export default function LandingPage() {
           <h1 className="max-w-3xl text-6xl font-black leading-[.92] tracking-[-.065em] sm:text-7xl">Your gamer identity. <span className="text-[var(--accent)]">All in one place.</span></h1>
           <p className="mt-7 max-w-xl text-lg leading-8 text-white/60">Build your gamer profile, show everything you play, find gamers like you, and share one Mechi everywhere.</p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/me" className="rounded-full bg-[var(--accent)] px-6 py-3.5 text-sm font-black text-[var(--accent-ink)]">Claim your Mechi ID</Link>
+            <Link href="/signup" className="rounded-full bg-[var(--accent)] px-6 py-3.5 text-sm font-black text-[var(--accent-ink)]">Claim your Mechi ID</Link>
             <Link href="/discover" className="rounded-full border border-white/12 bg-white/[.035] px-6 py-3.5 text-sm font-black">Explore gamers</Link>
           </div>
           <p className="mt-5 text-xs text-white/35">No empty lobbies. No tournament maze. Identity first.</p>
