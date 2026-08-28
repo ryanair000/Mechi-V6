@@ -80,6 +80,22 @@ export default async function MePage() {
         </article>
       </div>
 
+      <div className="mt-5 rounded-[2rem] border border-[var(--accent)]/20 bg-[var(--accent)]/[.045] p-6 sm:p-7">
+        <p className="text-xs font-black uppercase tracking-[.16em] text-[var(--accent)]">Mechi Card</p>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-5">
+          <div className="max-w-xl">
+            <p className="text-2xl font-black tracking-tight">Your identity, ready to flex.</p>
+            <p className="mt-2 text-sm leading-6 text-white/45">A 1200×630 share card with your games, platforms and a QR that always points back to your live profile.</p>
+          </div>
+          <Link
+            href={`/@${profile.handle}/card`}
+            className="rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-black text-[var(--accent-ink)]"
+          >
+            Open my card
+          </Link>
+        </div>
+      </div>
+
       <div className="mt-5 rounded-[2rem] border border-white/8 bg-[#0e1218] p-6 sm:p-7">
         <p className="text-xs font-black uppercase tracking-[.16em] text-white/30">Public identity</p>
         <div className="mt-4 flex flex-wrap items-center justify-between gap-4">
@@ -89,7 +105,7 @@ export default async function MePage() {
           </div>
           <Link
             href={`/@${profile.handle}`}
-            className="rounded-full bg-[var(--accent)] px-5 py-3 text-sm font-black text-[var(--accent-ink)]"
+            className="rounded-full border border-white/12 bg-white/[.04] px-5 py-3 text-sm font-black text-white"
           >
             View public profile
           </Link>
