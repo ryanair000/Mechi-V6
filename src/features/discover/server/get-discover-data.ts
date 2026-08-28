@@ -55,13 +55,20 @@ export type DiscoverCatalogItem = {
   shortName?: string | null;
 };
 
+export type DiscoverData = {
+  profiles: DiscoverProfile[];
+  games: DiscoverCatalogItem[];
+  platforms: DiscoverCatalogItem[];
+  hasNextPage: boolean;
+};
+
 function cleanJsonArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : [];
 }
 
 function cleanGames(value: unknown): DiscoverGame[] {
   return cleanJsonArray(value)
-    .map((item) => {
+    .map((item): DiscoverGame | null => {
       if (!item || typeof item !== 'object') return null;
       const raw = item as Record<string, unknown>;
       if (typeof raw.slug !== 'string' || typeof raw.name !== 'string') return null;
@@ -70,14 +77,14 @@ function cleanGames(value: unknown): DiscoverGame[] {
         name: raw.name,
         shortName: typeof raw.shortName === 'string' ? raw.shortName : null,
         isPrimary: raw.isPrimary === true,
-      } satisfies DiscoverGame;
+      };
     })
-    .filter((item): item is DiscoverGame => Boolean(item));
+    .filter((item): item is DiscoverGame => item !== null);
 }
 
 function cleanPlatforms(value: unknown): DiscoverPlatform[] {
   return cleanJsonArray(value)
-    .map((item) => {
+    .map((item): DiscoverPlatform | null => {
       if (!item || typeof item !== 'object') return null;
       const raw = item as Record<string, unknown>;
       if (typeof raw.slug !== 'string' || typeof raw.name !== 'string') return null;
@@ -85,9 +92,9 @@ function cleanPlatforms(value: unknown): DiscoverPlatform[] {
         slug: raw.slug,
         name: raw.name,
         isPrimary: raw.isPrimary === true,
-      } satisfies DiscoverPlatform;
+      };
     })
-    .filter((item): item is DiscoverPlatform => Boolean(item));
+    .filter((item): item is DiscoverPlatform => item !== null);
 }
 
 function normalizeProfile(row: Record<string, unknown>): DiscoverProfile | null {
@@ -118,7 +125,7 @@ function normalizeProfile(row: Record<string, unknown>): DiscoverProfile | null 
   };
 }
 
-export async function getDiscoverData(filters: DiscoverFilters) {
+export async function getDiscoverData(filters: DiscoverFilters): Promise<DiscoverData> {
   const supabase = await createClient();
   const offset = (filters.page - 1) * DISCOVER_PAGE_SIZE;
 
@@ -149,9 +156,13 @@ export async function getDiscoverData(filters: DiscoverFilters) {
     throw new Error(`Discover search failed: ${profilesResult.error.message}`);
   }
 
-  const profiles = (profilesResult.data ?? [])
-    .map((row) => normalizeProfile(row as Record<string, unknown>))
-    .filter((profile): profile is DiscoverProfile => Boolean(profile));
+  const rawProfiles: unknown[] = Array.isArray(profilesResult.data) ? profilesResult.data : [];
+  const profiles = rawProfiles
+    .map((row: unknown): DiscoverProfile | null => {
+      if (!row || typeof row !== 'object') return null;
+      return normalizeProfile(row as Record<string, unknown>);
+    })
+    .filter((profile: DiscoverProfile | null): profile is DiscoverProfile => profile !== null);
 
   const games: DiscoverCatalogItem[] = (gamesResult.data ?? []).map((game) => ({
     slug: game.slug,
