@@ -18,6 +18,12 @@
 - Connected `/me` and `/home` to the authenticated Mechi profile.
 - Added sign out.
 - Created a dedicated Vercel project named `mechi-v6` linked to `ryanair000/Mechi-V6`; V5 deployments remain untouched.
+- Fixed production metadata URL handling when `NEXT_PUBLIC_APP_URL` is empty.
+- Added the Jenga Supabase project URL and publishable key as public fallback client configuration while retaining environment-variable overrides for future migration.
+- Updated the Supabase proxy and health route to use the same effective configuration path.
+- Successfully built and deployed production on Vercel.
+- Verified `https://mechi-v6.vercel.app/health` returns HTTP 200 with `supabaseConfigured: true`.
+- Verified unauthenticated protected routes resolve to the login experience.
 
 ## Database verification
 
@@ -42,17 +48,16 @@ Long term, a dedicated Mechi Supabase project remains the preferred architecture
 
 ## Still pending before calling Sprint 1 production-ready
 
-1. Confirm Vercel has a successful first production deployment for the linked `mechi-v6` project.
-2. Confirm these Vercel environment variables are configured for the required environments:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`
-3. Add the deployed Mechi callback URL to the shared Supabase Auth redirect allow list without changing other apps' URLs.
-4. Run a real signup → email confirmation → handle claim → logout/login E2E test.
-5. Generate and commit `package-lock.json` once npm registry access is available, then run typecheck, lint and build.
+1. Add `https://mechi-v6.vercel.app/**` to the shared Supabase Auth redirect allow list without changing other apps' URLs.
+2. Run a real signup → email confirmation → handle claim → logout/login E2E test.
+3. Generate and commit `package-lock.json` once local/npm registry access is available.
+4. Pin the Vercel/Node runtime more strictly instead of the current `>=22.0.0` engine range.
 
-## CI note
+## Build verification
 
-GitHub Actions is currently failing before the workflow executes any step. Jobs show `runner_id: 0`, empty step lists and completion within roughly one second. This is a GitHub Actions runner/allocation issue, not a reported application compile/test failure. A real build is therefore still unverified.
+Vercel production build is verified successful on Next.js 16.3.3: compilation, TypeScript checking, static generation and deployment all completed successfully.
+
+GitHub Actions is still failing before the workflow executes any step. Jobs show `runner_id: 0`, empty step lists and completion within roughly one second. That remains a GitHub Actions runner/allocation issue, but it no longer blocks confidence in the production build because Vercel has completed the real production build successfully.
 
 ## Scope discipline
 
