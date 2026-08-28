@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { MechiMark } from '@/components/brand/mechi-mark';
+import { parsePublicHandle } from '@/features/identity/lib/public-handle';
 import { ShareProfileButton } from '@/features/profiles/components/share-profile-button';
 import { createClient } from '@/lib/supabase/server';
 
@@ -9,36 +10,45 @@ type PageProps = {
   params: Promise<{ handle: string }>;
 };
 
-function parseHandle(raw: string) {
-  const decoded = decodeURIComponent(raw).toLowerCase();
-  if (!decoded.startsWith('@')) return null;
-  const handle = decoded.slice(1);
-  return /^[a-z0-9_]{3,20}$/.test(handle) ? handle : null;
-}
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { handle: rawHandle } = await params;
-  const handle = parseHandle(rawHandle);
+  const handle = parsePublicHandle(rawHandle);
   if (!handle) return {};
 
   const supabase = await createClient();
   const { data: profile } = await supabase
     .from('mechi_profiles')
-    .select('display_name, handle, bio')
+    .select('display_name, handle, bio, profile_completed_at')
     .eq('handle', handle)
     .maybeSingle();
 
-  if (!profile) return {};
+  if (!profile?.profile_completed_at) return {};
+
+  const title = `${profile.display_name} (@${profile.handle})`;
+  const description = profile.bio || `See @${profile.handle}'s gamer identity on Mechi.`;
+  const cardImage = `/@${profile.handle}/card/image`;
 
   return {
-    title: `${profile.display_name} (@${profile.handle})`,
-    description: profile.bio || `See @${profile.handle}'s gamer identity on Mechi.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'profile',
+      images: [{ url: cardImage, width: 1200, height: 630, alt: `${profile.display_name}'s Mechi Card` }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [cardImage],
+    },
   };
 }
 
 export default async function PublicProfilePage({ params }: PageProps) {
   const { handle: rawHandle } = await params;
-  const handle = parseHandle(rawHandle);
+  const handle = parsePublicHandle(rawHandle);
   if (!handle) notFound();
 
   const supabase = await createClient();
@@ -48,7 +58,7 @@ export default async function PublicProfilePage({ params }: PageProps) {
     .eq('handle', handle)
     .maybeSingle();
 
-  if (!profile) notFound();
+  if (!profile?.profile_completed_at) notFound();
 
   const [{ data: gameRows }, { data: platformRows }, { data: accounts }] = await Promise.all([
     supabase
@@ -137,7 +147,15 @@ export default async function PublicProfilePage({ params }: PageProps) {
                   <p className="mt-1 text-sm font-bold text-white/45">@{profile.handle}</p>
                 </div>
               </div>
-              <ShareProfileButton handle={profile.handle} displayName={profile.display_name} />
+              <div className="flex flex-wrap gap-2">
+                <Link
+                  href={`/@${profile.handle}/card`}
+                  className="rounded-full bg-[var(--accent)] px-4 py-2.5 text-sm font-black text-[var(--accent-ink)] transition hover:brightness-110"
+                >
+                  Mechi Card
+                </Link>
+                <ShareProfileButton handle={profile.handle} displayName={profile.display_name} />
+              </div>
             </div>
 
             {location ? <p className="mt-5 text-sm font-bold text-white/45">{location}</p> : null}
