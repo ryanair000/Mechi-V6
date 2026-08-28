@@ -96,11 +96,14 @@ export default async function PublicProfilePage({ params }: PageProps) {
   const location = [profile.show_city ? profile.city : null, profile.country_code]
     .filter(Boolean)
     .join(', ');
-  const initials = profile.display_name
+  const initials = String(profile.display_name)
     .split(/\s+/)
     .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
+    .map((part: string) => part[0]?.toUpperCase())
     .join('');
+  const gamingStyles = Array.isArray(profile.gaming_styles)
+    ? profile.gaming_styles.filter((style): style is string => typeof style === 'string')
+    : [];
 
   return (
     <main className="min-h-screen pb-20">
@@ -140,9 +143,9 @@ export default async function PublicProfilePage({ params }: PageProps) {
             {location ? <p className="mt-5 text-sm font-bold text-white/45">{location}</p> : null}
             {profile.bio ? <p className="mt-4 max-w-2xl text-base leading-7 text-white/70">{profile.bio}</p> : null}
 
-            {profile.gaming_styles?.length ? (
+            {gamingStyles.length ? (
               <div className="mt-5 flex flex-wrap gap-2">
-                {profile.gaming_styles.map((style) => (
+                {gamingStyles.map((style: string) => (
                   <span key={style} className="rounded-full border border-[var(--accent)]/20 bg-[var(--accent)]/[.07] px-3 py-1.5 text-xs font-black capitalize text-[var(--accent)]">
                     {style.replaceAll('-', ' ')}
                   </span>
