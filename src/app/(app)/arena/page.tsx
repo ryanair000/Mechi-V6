@@ -29,12 +29,45 @@ async function activateCompetitiveProfile(formData: FormData) {
 
   if (!user) redirect('/login');
 
-  const { error } = await supabase.rpc('mechi_activate_competitive_profile', {
-    p_game_slug: gameSlug,
-  });
+  const { data: game, error: gameError } = await supabase
+    .from('mechi_games')
+    .select('id')
+    .eq('slug', gameSlug)
+    .eq('competition_enabled', true)
+    .maybeSingle();
 
-  if (error) {
-    throw new Error(`Could not activate competitive profile: ${error.message}`);
+  if (gameError || !game) {
+    throw new Error('That competitive game is not currently available.');
+  }
+
+  const { error: catalogueError } = await supabase
+    .from('mechi_profile_games')
+    .upsert(
+      {
+        profile_id: user.id,
+        game_id: game.id,
+        currently_playing: true,
+        skill_style: 'competitive',
+      },
+      {
+        onConflict: 'profile_id,game_id',
+        ignoreDuplicates: true,
+      },
+    );
+
+  if (catalogueError) {
+    throw new Error(`Could not add the game to your Mechi profile: ${catalogueError.message}`);
+  }
+
+  const { error: activationError } = await supabase
+    .from('mechi_player_game_profiles')
+    .insert({
+      profile_id: user.id,
+      game_id: game.id,
+    });
+
+  if (activationError && activationError.code !== '23505') {
+    throw new Error(`Could not activate competitive profile: ${activationError.message}`);
   }
 
   revalidatePath('/arena');
@@ -160,7 +193,7 @@ export default async function ArenaPage() {
                     <div className="mt-7 rounded-2xl border border-white/8 bg-black/20 p-5">
                       <p className="text-xs font-black uppercase tracking-[.14em] text-[var(--accent)]">Start your competitive identity</p>
                       <p className="mt-2 text-sm leading-6 text-white/45">
-                        Activating creates a clean, game-specific record at the default rating. It does not create a wallet, entry fee, prize balance or cash eligibility.
+                        Activating creates a clean, game-specific record at the configured default rating. It does not create a wallet, entry fee, prize balance or cash eligibility.
                       </p>
                     </div>
 
