@@ -171,8 +171,8 @@ begin
   do update set
     currently_playing = true,
     skill_style = case
-      when public.mechi_profile_games.skill_style = 'casual' then 'mixed'
-      else public.mechi_profile_games.skill_style
+      when mechi_profile_games.skill_style = 'casual' then 'mixed'
+      else mechi_profile_games.skill_style
     end;
 
   insert into public.mechi_player_game_profiles (
