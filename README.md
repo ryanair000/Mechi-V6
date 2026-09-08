@@ -36,6 +36,8 @@ Sponsored prize competitions come before player-funded cash competition.
 
 Live cash features require dedicated financial infrastructure plus legal/regulatory and payment-provider approval before enablement.
 
+**Sequence guardrail:** Sprint 9+ competitive implementation is designed now, but product rollout should still respect the closed-Alpha gate in `docs/ROADMAP.md`. Identity remains the activation foundation.
+
 ## Stack
 
 - Next.js 16.3.3
