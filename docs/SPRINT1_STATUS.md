@@ -46,6 +46,8 @@ Because V6 currently reuses Jenga, it inherits project-level security configurat
 
 Long term, a dedicated Mechi Supabase project remains the preferred architecture once a project slot is available. The normal Mechi migration chain is kept portable for that move.
 
+**Updated V6 policy:** the shared Jenga project may continue supporting early identity and free competitive development, but live real-money functionality must not be enabled there. A dedicated PlayMechi Supabase/database security boundary is a hard prerequisite before the financial phase.
+
 ## Still pending before calling Sprint 1 production-ready
 
 1. Add `https://mechi-v6.vercel.app/**` to the shared Supabase Auth redirect allow list without changing other apps' URLs.
@@ -62,3 +64,11 @@ GitHub Actions is still failing before the workflow executes any step. Jobs show
 ## Scope discipline
 
 Sprint 1 does not add tournaments, matchmaking, teams, wallets, messaging or organizer tooling. The next product work should remain profile/onboarding focused after the auth flow passes E2E.
+
+## Approved post-Alpha direction
+
+The product direction is now locked as:
+
+**Mechi ID → gamer profile → FC 26/eFootball identity → Free Ranked → Mechi Rank → Mechi Rep → tournaments → sponsored prizes → compliant Cash Arena.**
+
+The broader profile catalogue remains, but competitive V6 support is limited to FC 26 and eFootball.
