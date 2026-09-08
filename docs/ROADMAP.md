@@ -115,6 +115,8 @@ Measure:
 - rank placeholders
 - competitive stats shell
 
+**Design status:** architecture approved. Implementation should begin after/alongside Alpha completion without changing the Alpha activation loop.
+
 **Exit:** a player can have independent FC 26 and eFootball competitive identities.
 
 ## Sprint 10 — Free Match Room
