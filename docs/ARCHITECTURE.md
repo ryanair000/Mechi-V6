@@ -14,6 +14,7 @@
 10. Money truth comes from an immutable double-entry ledger, never a mutable profile balance.
 11. Match truth comes from verified results and frozen rulesets.
 12. Real-money enablement is gated by dedicated infrastructure, legal/regulatory classification and payment-provider approval.
+13. Competitive schema may be designed ahead of rollout, but identity Alpha activation remains the product gate.
 
 ## Current app shape
 
