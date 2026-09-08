@@ -1,13 +1,16 @@
 import Link from 'next/link';
 import { MechiMark } from '@/components/brand/mechi-mark';
 
-const links = [
-  { href: '/home', label: 'Home' },
-  { href: '/discover', label: 'Discover' },
-  { href: '/me', label: 'Me' },
-];
-
 export function AppNav() {
+  const arenaEnabled = process.env.MECHI_ARENA_ENABLED === 'true';
+
+  const links = [
+    { href: '/home', label: 'Home' },
+    ...(arenaEnabled ? [{ href: '/arena', label: 'Arena' }] : []),
+    { href: '/discover', label: 'Discover' },
+    { href: '/me', label: 'Me' },
+  ];
+
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-[#07090de6] backdrop-blur-xl">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
